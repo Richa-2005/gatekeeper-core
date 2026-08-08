@@ -1,0 +1,32 @@
+services:
+  backend1:
+    build: .
+    command: uvicorn tests.mock_backend:app --host 0.0.0.0 --port 8001
+    ports:
+      - "8001:8001"
+
+  backend2:
+    build: .
+    command: uvicorn tests.mock_backend:app --host 0.0.0.0 --port 8002
+    ports:
+      - "8002:8002"
+
+  backend3:
+    build: .
+    command: uvicorn tests.mock_backend:app --host 0.0.0.0 --port 8003
+    ports:
+      - "8003:8003"
+
+  gateway:
+    build: .
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    environment:
+      BACKEND_NODES: http://backend1:8001,http://backend2:8002,http://backend3:8003
+      DEFAULT_RATE_LIMIT: 100
+      RATE_LIMIT_WINDOW_SECONDS: 60
+    depends_on:
+      - backend1
+      - backend2
+      - backend3
