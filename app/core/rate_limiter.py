@@ -3,9 +3,9 @@ import time
 import asyncio
 
 class SlidingWindowRateLimiter:
-    def __init__(self, max_limit_per_minute: int = 100):
+    def __init__(self, max_limit_per_minute: int = 100, window_seconds: int = 60):
         self.max_limit = max_limit_per_minute
-        self.window_seconds = 60
+        self.window_seconds = window_seconds
         self.requests = defaultdict(deque)
         self.shared_lock = asyncio.Lock()
 
