@@ -4,6 +4,10 @@ import uvicorn
 
 app = FastAPI()
 
+@app.get("/health")
+async def health():
+    return {"status": "healthy"}
+
 @app.api_route("/{full_path:path}", methods=["GET", "POST", "PUT", "DELETE"])
 async def catch_all(request: Request, full_path: str):
     port = request.url.port
