@@ -325,7 +325,7 @@ The rate limiter tests are async. To run them through `pytest`, add an async pyt
 - Redis failures currently bubble up instead of falling back to in-memory limiting or fail-open behavior.
 - Health-check configuration is currently hard-coded in the checker class.
 
-## Roadmap Ideas
+## Future Scope
 
 - Add request/response streaming for large payloads
 - Add configurable health-check interval and failure thresholds
