@@ -16,6 +16,11 @@ services:
     command: uvicorn tests.mock_backend:app --host 0.0.0.0 --port 8003
     ports:
       - "8003:8003"
+  
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
 
   gateway:
     build: .
@@ -24,9 +29,12 @@ services:
       - "8000:8000"
     environment:
       BACKEND_NODES: http://backend1:8001,http://backend2:8002,http://backend3:8003
-      DEFAULT_RATE_LIMIT: 100
+      DEFAULT_RATE_LIMIT: 3
       RATE_LIMIT_WINDOW_SECONDS: 60
+      RATE_LIMIT_BACKEND: redis
+      REDIS_URL: redis://redis:6379/0
     depends_on:
+      - redis
       - backend1
       - backend2
       - backend3

@@ -6,15 +6,23 @@ from app.core.hash_ring import ConsistentHashRing
 from app.core.rate_limiter import SlidingWindowRateLimiter
 from app.core.health_checker import HealthChecker
 import asyncio
+from app.core.redis_limiter import RedisSlidingWindowRateLimiter
 
 hash_ring = ConsistentHashRing()
 for node_url in settings.node_list:
     hash_ring.add_node(node_url)
 
-rate_limiter = SlidingWindowRateLimiter(
-    max_limit_per_minute=settings.DEFAULT_RATE_LIMIT,
-    window_seconds=settings.RATE_LIMIT_WINDOW_SECONDS,
-)
+if settings.RATE_LIMIT_BACKEND == "redis":
+    rate_limiter = RedisSlidingWindowRateLimiter(
+            redis_url=settings.REDIS_URL,
+            max_limit_per_minute=settings.DEFAULT_RATE_LIMIT,
+            window_seconds=settings.RATE_LIMIT_WINDOW_SECONDS,
+    )
+else:
+    rate_limiter = SlidingWindowRateLimiter(
+        max_limit_per_minute=settings.DEFAULT_RATE_LIMIT,
+        window_seconds=settings.RATE_LIMIT_WINDOW_SECONDS,
+    )
 background_tasks = set()
 
 health_check = HealthChecker(hash_ring,settings.node_list)
