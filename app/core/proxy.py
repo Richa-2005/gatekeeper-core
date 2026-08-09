@@ -1,7 +1,7 @@
 import httpx
 from fastapi import Request, Response, HTTPException
 
-async def forward_request(request: Request, target_node_url: str) -> Response:
+async def forward_request(request: Request, target_node_url: str, extra_headers: dict | None = None) -> Response:
     """
     Takes an incoming FastAPI request, forwards it to the target backend node URL
     using an asynchronous HTTP client, and returns the response.
@@ -16,6 +16,8 @@ async def forward_request(request: Request, target_node_url: str) -> Response:
     method = request.method
     headers = dict(request.headers)
     headers.pop("host", None) 
+    if extra_headers:
+        headers.update(extra_headers)
 
     body = await request.body()
 

@@ -7,6 +7,9 @@ from app.core.rate_limiter import SlidingWindowRateLimiter
 from app.core.health_checker import HealthChecker
 import asyncio
 from app.core.redis_limiter import RedisSlidingWindowRateLimiter
+from app.core.telemetry import configure_logging, setup_metrics
+
+configure_logging()
 
 hash_ring = ConsistentHashRing()
 for node_url in settings.node_list:
@@ -54,6 +57,7 @@ app.add_middleware(
     hash_ring=hash_ring,
     rate_limiter=rate_limiter,
 )
+setup_metrics(app)
 
 @app.get("/healthz", include_in_schema=False)
 def healthcheck():
